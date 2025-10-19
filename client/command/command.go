@@ -6,6 +6,8 @@ var (
 	cmdExit   = "exit"
 	cmdWhoAmI = "whoami"
 	cmdEmpty  = ""
+
+	cmdChat = "chat"
 )
 
 func Exec(input string) (bool, error) {
@@ -17,7 +19,7 @@ func Exec(input string) (bool, error) {
 	case 1:
 		return execSingleCommand(parts[0])
 	default:
-		return execCommandArgs(parts[0], parts[1:])
+		return execComplexCommand(parts[0], parts[1:])
 	}
 }
 
@@ -34,8 +36,10 @@ func execSingleCommand(command string) (bool, error) {
 	}
 }
 
-func execCommandArgs(command string, args []string) (bool, error) {
+func execComplexCommand(command string, args []string) (bool, error) {
 	switch command {
+	case cmdChat:
+		return chat(args)
 	default:
 		return true, errInvalidCommand
 	}
