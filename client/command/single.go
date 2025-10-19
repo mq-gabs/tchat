@@ -7,3 +7,11 @@ func whoAmI() (bool, error) {
 
 	return true, nil
 }
+
+func exit() (bool, error) {
+	return false, nil
+}
+
+func empty() (bool, error) {
+	return true, nil
+}

@@ -24,11 +24,11 @@ func Exec(input string) (bool, error) {
 func execSingleCommand(command string) (bool, error) {
 	switch command {
 	case cmdExit:
-		return false, nil
+		return exit()
 	case cmdWhoAmI:
 		return whoAmI()
 	case cmdEmpty:
-		return true, nil
+		return empty()
 	default:
 		return true, errInvalidCommand
 	}
