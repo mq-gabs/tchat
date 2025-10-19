@@ -11,14 +11,14 @@ import (
 
 type TChatCache struct {
 	users    map[utils.UserID]*users.User
-	messages map[utils.Merged2UsersID][]*messages.Message
+	messages map[utils.MergedIDs][]*messages.Message
 	mu       *sync.Mutex
 }
 
 func NewCache() *TChatCache {
 	return &TChatCache{
 		users:    make(map[utils.UserID]*users.User),
-		messages: make(map[utils.Merged2UsersID][]*messages.Message),
+		messages: make(map[utils.MergedIDs][]*messages.Message),
 	}
 }
 
@@ -36,17 +36,16 @@ func (c *TChatCache) FindUserByID(id utils.UserID) (*users.User, error) {
 
 	u, ok := c.users[id]
 	if !ok {
-		return nil, fmt.Errorf("%w: %v", errUserDoesNotExists, id)
+		return nil, fmt.Errorf("%w: %v", ErrUserDoesNotExists, id)
 	}
 
 	return u, nil
 }
-func (c *TChatCache) SendMessage(body string, sentBy, sentTo *users.User) error {
+func (c *TChatCache) SendMessage(m *messages.Message) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	m := messages.New(body, sentBy, sentTo)
-	mergedIds, err := utils.MergeIDs(string(sentBy.ID), string(sentTo.ID))
+	mergedIds, err := utils.MergeIDs(string(m.SentBy.ID), string(m.SentTo.ID))
 	if err != nil {
 		return err
 	}

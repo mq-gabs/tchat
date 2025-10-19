@@ -7,8 +7,8 @@ import (
 )
 
 type Store interface {
-	SaveUser(users.User) error
+	SaveUser(*users.User) error
 	FindUserByID(utils.UserID) (*users.User, error)
-	SendMessage(body string, sentBy, sentTo *users.User) error
+	SendMessage(*messages.Message) error
 	ReadChat(user1, user2 *users.User) ([]*messages.Message, error)
 }

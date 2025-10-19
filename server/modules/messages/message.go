@@ -8,17 +8,17 @@ import (
 )
 
 type Message struct {
-	ID     utils.MessageID
-	Body   string
-	SentBy *users.User
-	SentTo *users.User
-	SentAt time.Time
+	ID     utils.MessageID   `json:"id"`
+	Body   utils.MessageBody `json:"body"`
+	SentBy *users.User       `json:"sent_by"`
+	SentTo *users.User       `json:"sent_to"`
+	SentAt time.Time         `json:"sent_at"`
 }
 
-func New(body string, sentBy, sentTo *users.User) *Message {
+func New(body utils.MessageBody, sentBy, sentTo *users.User) *Message {
 	return &Message{
 		ID:     utils.MessageID(utils.NewID()),
-		Body:   body,
+		Body:   utils.MessageBody(body),
 		SentBy: sentBy,
 		SentTo: sentTo,
 		SentAt: time.Now(),

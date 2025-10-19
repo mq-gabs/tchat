@@ -3,13 +3,13 @@ package users
 import "tchat.com/server/utils"
 
 type User struct {
-	ID   utils.UserID
-	Name string
+	ID   utils.UserID   `json:"id"`
+	Name utils.UserName `json:"name"`
 }
 
-func New(name string) *User {
+func New(name utils.UserName) *User {
 	return &User{
 		ID:   utils.UserID(utils.NewID()),
-		Name: name,
+		Name: utils.UserName(name),
 	}
 }
