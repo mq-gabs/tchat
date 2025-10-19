@@ -39,7 +39,7 @@ func execSingleCommand(command string) (bool, error) {
 func execComplexCommand(command string, args []string) (bool, error) {
 	switch command {
 	case cmdChat:
-		return chat(args)
+		return startChat(args)
 	default:
 		return true, errInvalidCommand
 	}
