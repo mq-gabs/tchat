@@ -2,6 +2,7 @@ package store
 
 import (
 	"fmt"
+	"sync"
 
 	"tchat.com/server/modules/messages"
 	"tchat.com/server/modules/users"
@@ -11,6 +12,7 @@ import (
 type TChatCache struct {
 	users    map[utils.UserID]*users.User
 	messages map[utils.Merged2UsersID][]*messages.Message
+	mu       *sync.Mutex
 }
 
 func NewCache() *TChatCache {
@@ -21,11 +23,17 @@ func NewCache() *TChatCache {
 }
 
 func (c *TChatCache) SaveUser(u *users.User) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	c.users[u.ID] = u
 
 	return nil
 }
 func (c *TChatCache) FindUserByID(id utils.UserID) (*users.User, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	u, ok := c.users[id]
 	if !ok {
 		return nil, fmt.Errorf("%w: %v", errUserDoesNotExists, id)
@@ -34,6 +42,9 @@ func (c *TChatCache) FindUserByID(id utils.UserID) (*users.User, error) {
 	return u, nil
 }
 func (c *TChatCache) SendMessage(body string, sentBy, sentTo *users.User) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	m := messages.New(body, sentBy, sentTo)
 	mergedIds, err := utils.MergeIDs(string(sentBy.ID), string(sentTo.ID))
 	if err != nil {
@@ -45,6 +56,9 @@ func (c *TChatCache) SendMessage(body string, sentBy, sentTo *users.User) error 
 	return nil
 }
 func (c *TChatCache) ReadChat(user1, user2 *users.User) ([]*messages.Message, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	mergedIds, err := utils.MergeIDs(string(user1.ID), string(user2.ID))
 	if err != nil {
 		return nil, err
