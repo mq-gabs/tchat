@@ -19,6 +19,7 @@ func NewCache() *TChatCache {
 	return &TChatCache{
 		users:    make(map[utils.UserID]*users.User),
 		messages: make(map[utils.MergedIDs][]*messages.Message),
+		mu:       &sync.Mutex{},
 	}
 }
 

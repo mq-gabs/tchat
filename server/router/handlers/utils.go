@@ -6,5 +6,5 @@ import (
 )
 
 func ReadBody(r *http.Request, model any) error {
-	return json.NewDecoder(r.Body).Decode(&model)
+	return json.NewDecoder(r.Body).Decode(model)
 }

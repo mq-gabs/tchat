@@ -36,7 +36,7 @@ func (s SendMessageBody) Validate() error {
 func (h *Handlers) SendMessage(w http.ResponseWriter, r *http.Request) {
 	b := SendMessageBody{}
 
-	if err := ReadBody(r, b); err != nil {
+	if err := ReadBody(r, &b); err != nil {
 		WriteInternalServerError(w, err)
 		return
 	}
@@ -84,7 +84,7 @@ func (r ReadChatBody) Validate() error {
 func (h *Handlers) ReadChat(w http.ResponseWriter, r *http.Request) {
 	b := ReadChatBody{}
 
-	if err := ReadBody(r, b); err != nil {
+	if err := ReadBody(r, &b); err != nil {
 		WriteInternalServerError(w, err)
 		return
 	}
@@ -128,7 +128,7 @@ func (s SaveUserBody) Validate() error {
 func (h *Handlers) SaveUser(w http.ResponseWriter, r *http.Request) {
 	b := SaveUserBody{}
 
-	if err := ReadBody(r, b); err != nil {
+	if err := ReadBody(r, &b); err != nil {
 		WriteInternalServerError(w, err)
 		return
 	}
@@ -162,7 +162,7 @@ func (f FindUserByIDBody) Validate() error {
 func (h *Handlers) FindUserByID(w http.ResponseWriter, r *http.Request) {
 	b := FindUserByIDBody{}
 
-	if err := ReadBody(r, b); err != nil {
+	if err := ReadBody(r, &b); err != nil {
 		WriteInternalServerError(w, err)
 		return
 	}

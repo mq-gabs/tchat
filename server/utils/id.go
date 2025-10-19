@@ -18,5 +18,5 @@ func MergeIDs(id1, id2 string) (MergedIDs, error) {
 		return MergedIDs(id1 + id2), nil
 	}
 
-	return MergedIDs(id2 + id2), nil
+	return MergedIDs(id2 + id1), nil
 }
