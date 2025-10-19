@@ -5,6 +5,7 @@ import "strings"
 var (
 	cmdExit   = "exit"
 	cmdWhoAmI = "whoami"
+	cmdEmpty  = ""
 )
 
 func Exec(input string) (bool, error) {
@@ -26,6 +27,8 @@ func execSingleCommand(command string) (bool, error) {
 		return false, nil
 	case cmdWhoAmI:
 		return whoAmI()
+	case cmdEmpty:
+		return true, nil
 	default:
 		return true, errInvalidCommand
 	}
