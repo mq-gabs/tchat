@@ -146,7 +146,7 @@ func (h *Handlers) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	WriteOKEmpty(w, "User created")
+	WriteOKWithBody(w, u)
 }
 
 type FindUserByIDBody struct {
