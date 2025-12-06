@@ -44,7 +44,7 @@ func WriteInternalServerError(w http.ResponseWriter, err error) {
 		Success: false,
 		Code:    500,
 		Message: "Internal Server Error",
-		Details: err,
+		Details: err.Error(),
 	}
 
 	WriteResponse(w, &r)
@@ -66,7 +66,7 @@ func WriteNotFound(w http.ResponseWriter, msg string, err error) {
 		Success: false,
 		Code:    404,
 		Message: msg,
-		Details: err,
+		Details: err.Error(),
 	}
 
 	WriteResponse(w, &r)
@@ -88,7 +88,7 @@ func WriteBadRequest(w http.ResponseWriter, err error) {
 		Success: false,
 		Code:    400,
 		Message: "Bad Request",
-		Details: err,
+		Details: err.Error(),
 	}
 
 	WriteResponse(w, &r)
