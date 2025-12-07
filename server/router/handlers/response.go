@@ -6,11 +6,9 @@ import (
 )
 
 type Response struct {
-	Success bool   `json:"success"`
-	Code    int    `json:"code"`
+	Code    int    `json:"-"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"`
-	Details any    `json:"details,omitempty"`
 }
 
 func (r *Response) WriteSelf(w http.ResponseWriter) {
@@ -41,21 +39,17 @@ func WriteDefaultError(w http.ResponseWriter) {
 
 func WriteInternalServerError(w http.ResponseWriter, err error) {
 	r := Response{
-		Success: false,
 		Code:    500,
-		Message: "Internal Server Error",
-		Details: err.Error(),
+		Message: err.Error(),
 	}
 
 	WriteResponse(w, &r)
 }
 
-func WriteOKEmpty(w http.ResponseWriter, details any) {
+func WriteOKEmpty(w http.ResponseWriter, message string) {
 	r := Response{
-		Success: true,
 		Code:    200,
-		Message: "OK",
-		Details: details,
+		Message: message,
 	}
 
 	WriteResponse(w, &r)
@@ -63,10 +57,8 @@ func WriteOKEmpty(w http.ResponseWriter, details any) {
 
 func WriteNotFound(w http.ResponseWriter, msg string, err error) {
 	r := Response{
-		Success: false,
 		Code:    404,
-		Message: msg,
-		Details: err.Error(),
+		Message: err.Error(),
 	}
 
 	WriteResponse(w, &r)
@@ -74,7 +66,6 @@ func WriteNotFound(w http.ResponseWriter, msg string, err error) {
 
 func WriteOKWithBody(w http.ResponseWriter, body any) {
 	r := Response{
-		Success: true,
 		Code:    200,
 		Message: "OK",
 		Data:    body,
@@ -85,10 +76,8 @@ func WriteOKWithBody(w http.ResponseWriter, body any) {
 
 func WriteBadRequest(w http.ResponseWriter, err error) {
 	r := Response{
-		Success: false,
 		Code:    400,
-		Message: "Bad Request",
-		Details: err.Error(),
+		Message: err.Error(),
 	}
 
 	WriteResponse(w, &r)

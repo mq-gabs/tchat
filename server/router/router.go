@@ -8,14 +8,21 @@ import (
 	"tchat.com/server/store"
 )
 
+const (
+	PathUsersGet     = "/users"
+	PathUsersSave    = "/users"
+	PathMessagesGet  = "/messages"
+	PathMessagesSend = "/messages"
+)
+
 func GetHandler() http.Handler {
 	h := handlers.NewHandler(store.NewCache())
 	r := mux.NewRouter()
 
-	r.HandleFunc("/users", h.FindUserByID).Methods("GET")
-	r.HandleFunc("/users", h.SaveUser).Methods("POST")
-	r.HandleFunc("/messages", h.ReadChat).Methods("GET")
-	r.HandleFunc("/messages", h.SendMessage).Methods("POST")
+	r.HandleFunc(PathUsersGet, h.FindUserByID).Methods("GET")
+	r.HandleFunc(PathUsersSave, h.SaveUser).Methods("POST")
+	r.HandleFunc(PathMessagesGet, h.ReadChat).Methods("GET")
+	r.HandleFunc(PathMessagesSend, h.SendMessage).Methods("POST")
 
 	return r
 }
