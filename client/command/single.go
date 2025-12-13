@@ -2,16 +2,16 @@ package command
 
 import "fmt"
 
-func whoAmI() (bool, error) {
+func whoAmI() error {
 	fmt.Println("John Doe")
 
-	return true, nil
+	return nil
 }
 
-func exit() (bool, error) {
-	return false, nil
+func exit() error {
+	return ErrExit
 }
 
-func empty() (bool, error) {
-	return true, nil
+func empty() error {
+	return nil
 }

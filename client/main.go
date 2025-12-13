@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 
@@ -11,10 +12,9 @@ import (
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	var input string
-	var cont = true
 	var err error
 
-	for cont {
+	for {
 		fmt.Printf("tchat > ")
 
 		if !scanner.Scan() {
@@ -24,9 +24,21 @@ func main() {
 
 		input = scanner.Text()
 
-		cont, err = command.Exec(input)
-		if err != nil {
-			fmt.Printf("ERROR: %v\n", err.Error())
+		err = command.Exec(input)
+
+		if err == nil {
+			continue
+		}
+
+		if errors.Is(err, command.ErrExit) {
+			fmt.Println("Bye!")
+			return
+		}
+
+		fmt.Printf("ERROR: %v\n", err.Error())
+
+		if errors.Is(err, command.ErrFatal) {
+			return
 		}
 	}
 }

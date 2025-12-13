@@ -15,14 +15,14 @@ import (
 	"tchat.com/server/utils"
 )
 
-func startChat(args []string) (bool, error) {
+func startChat(args []string) error {
 	if len(args) == 0 {
-		return true, errEmptyArgs
+		return errEmptyArgs
 	}
 
 	bytes, err := exec.Command("tput", "smcup").Output()
 	if err != nil {
-		return true, errors.Join(errCannotExec, err)
+		return errors.Join(errCannotExec, err)
 	}
 	fmt.Println(string(bytes))
 
@@ -46,7 +46,7 @@ func startChat(args []string) (bool, error) {
 		fmt.Printf("> ")
 
 		if !scanner.Scan() {
-			return true, errors.New("cannot scan message")
+			return errors.New("cannot scan message")
 		}
 
 		input = scanner.Text()
@@ -66,5 +66,5 @@ func startChat(args []string) (bool, error) {
 		})
 	}
 
-	return true, nil
+	return nil
 }

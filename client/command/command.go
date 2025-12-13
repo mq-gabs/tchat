@@ -10,12 +10,12 @@ var (
 	cmdChat = "chat"
 )
 
-func Exec(input string) (bool, error) {
+func Exec(input string) error {
 	parts := strings.Split(input, " ")
 
 	switch len(parts) {
 	case 0:
-		return true, errEmptyInput
+		return errEmptyInput
 	case 1:
 		return execSingleCommand(parts[0])
 	default:
@@ -23,7 +23,7 @@ func Exec(input string) (bool, error) {
 	}
 }
 
-func execSingleCommand(command string) (bool, error) {
+func execSingleCommand(command string) error {
 	switch command {
 	case cmdExit:
 		return exit()
@@ -32,15 +32,15 @@ func execSingleCommand(command string) (bool, error) {
 	case cmdEmpty:
 		return empty()
 	default:
-		return true, errInvalidCommand
+		return errInvalidCommand
 	}
 }
 
-func execComplexCommand(command string, args []string) (bool, error) {
+func execComplexCommand(command string, args []string) error {
 	switch command {
 	case cmdChat:
 		return startChat(args)
 	default:
-		return true, errInvalidCommand
+		return errInvalidCommand
 	}
 }
