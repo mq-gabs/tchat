@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"tchat.com/server/modules/messages"
+	"tchat.com/server/modules/users"
 	"tchat.com/server/router"
 	"tchat.com/server/router/handlers"
 )
@@ -38,15 +39,15 @@ func (api *TChatAPI) do(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func (api *TChatAPI) ReadChat(readChatBody *handlers.ReadChatBody) ([]messages.Message, error) {
+func (api *TChatAPI) ReadChat(readChatQuery *handlers.ReadChatQuery) ([]messages.Message, error) {
 	req, err := NewGet(api.host + router.PathMessagesGet)
 	if err != nil {
 		return nil, err
 	}
 
 	AddQuery(req, map[string]string{
-		"user_1": string(readChatBody.User1),
-		"user_2": string(readChatBody.User2),
+		"user_1": string(readChatQuery.User1),
+		"user_2": string(readChatQuery.User2),
 	})
 
 	resp, err := api.do(req)
@@ -73,4 +74,51 @@ func (api *TChatAPI) SendMessage(sendMessageBody *handlers.SendMessageBody) erro
 	_, err = ProcessResponseData[any](resp)
 
 	return err
+}
+
+func (api *TChatAPI) SaveUser(saveUserBody *handlers.SaveUserBody) (*users.User, error) {
+	req, err := NewPost(api.host+router.PathUsersSave, saveUserBody)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := api.do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	user, err := ProcessResponseData[users.User](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (api *TChatAPI) FindUserByID(findUserByIDQuery *handlers.FindUserByIDQuery) (*users.User, error) {
+	req, err := NewGet(api.host + router.PathUsersSave)
+	if err != nil {
+		return nil, err
+	}
+
+	AddQuery(req, map[string]string{
+		"user_id": string(findUserByIDQuery.UserID),
+	})
+
+	resp, err := api.do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	user, err := ProcessResponseData[users.User](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+
 }

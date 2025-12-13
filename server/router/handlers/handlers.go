@@ -69,12 +69,12 @@ func (h *Handlers) SendMessage(w http.ResponseWriter, r *http.Request) {
 	WriteOKEmpty(w, "Message sent")
 }
 
-type ReadChatBody struct {
-	User1 utils.UserID `json:"user_1"`
-	User2 utils.UserID `json:"user_2"`
+type ReadChatQuery struct {
+	User1 utils.UserID
+	User2 utils.UserID
 }
 
-func (r ReadChatBody) Validate() error {
+func (r ReadChatQuery) Validate() error {
 	err1 := r.User1.Validate()
 	err2 := r.User2.Validate()
 
@@ -82,12 +82,11 @@ func (r ReadChatBody) Validate() error {
 }
 
 func (h *Handlers) ReadChat(w http.ResponseWriter, r *http.Request) {
-	b := ReadChatBody{}
+	b := ReadChatQuery{}
 
-	if err := ReadBody(r, &b); err != nil {
-		WriteInternalServerError(w, err)
-		return
-	}
+	q := r.URL.Query()
+	b.User1 = utils.UserID(q.Get("user_1"))
+	b.User2 = utils.UserID(q.Get("user_2"))
 
 	if err := b.Validate(); err != nil {
 		WriteBadRequest(w, err)
@@ -149,23 +148,21 @@ func (h *Handlers) SaveUser(w http.ResponseWriter, r *http.Request) {
 	WriteOKWithBody(w, u)
 }
 
-type FindUserByIDBody struct {
-	UserID utils.UserID `json:"user_id"`
+type FindUserByIDQuery struct {
+	UserID utils.UserID
 }
 
-func (f FindUserByIDBody) Validate() error {
+func (f FindUserByIDQuery) Validate() error {
 	err := f.UserID.Validate()
 
 	return err
 }
 
 func (h *Handlers) FindUserByID(w http.ResponseWriter, r *http.Request) {
-	b := FindUserByIDBody{}
+	b := FindUserByIDQuery{}
 
-	if err := ReadBody(r, &b); err != nil {
-		WriteInternalServerError(w, err)
-		return
-	}
+	q := r.URL.Query()
+	b.UserID = utils.UserID(q.Get("user_id"))
 
 	if err := b.Validate(); err != nil {
 		WriteBadRequest(w, err)
