@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 	"time"
 
 	"tchat.com/client/chat"
+	"tchat.com/client/cmd/cmdutils"
 	"tchat.com/server/modules/messages"
 	"tchat.com/server/modules/users"
 	"tchat.com/server/utils"
@@ -20,11 +20,7 @@ func startChat(args []string) error {
 		return errEmptyArgs
 	}
 
-	bytes, err := exec.Command("tput", "smcup").Output()
-	if err != nil {
-		return errors.Join(errCannotExec, err)
-	}
-	fmt.Println(string(bytes))
+	cmdutils.EnterAlternateScreen()
 
 	sender := &users.User{
 		ID:   "asldkfj",
@@ -52,8 +48,7 @@ func startChat(args []string) error {
 		input = scanner.Text()
 
 		if strings.HasPrefix(input, "/exit") {
-			bytes, _ := exec.Command("tput", "rmcup").Output()
-			fmt.Println(string(bytes))
+			cmdutils.ExitAlternateScreen()
 			break
 		}
 

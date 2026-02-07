@@ -20,7 +20,7 @@ func main() {
 		fmt.Printf("tchat > ")
 
 		if !scanner.Scan() {
-			fmt.Println("cannot scan input")
+			fmt.Println("FATAL: cannot scan input")
 			return
 		}
 
