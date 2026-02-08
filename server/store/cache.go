@@ -46,7 +46,7 @@ func (c *TChatCache) SendMessage(m *messages.Message) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	mergedIds, err := utils.MergeIDs(string(m.SentBy.ID), string(m.SentTo.ID))
+	mergedIds, err := utils.MergeIDs(m.SentBy.ID, m.SentTo.ID)
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (c *TChatCache) ReadChat(user1, user2 *users.User) ([]*messages.Message, er
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	mergedIds, err := utils.MergeIDs(string(user1.ID), string(user2.ID))
+	mergedIds, err := utils.MergeIDs(user1.ID, user2.ID)
 	if err != nil {
 		return nil, err
 	}

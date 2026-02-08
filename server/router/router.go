@@ -9,11 +9,13 @@ import (
 )
 
 const (
-	PathUsersGet     = "/users"
-	PathUsersSave    = "/users"
-	PathMessagesGet  = "/messages"
-	PathMessagesSend = "/messages"
-	PathPing         = "/ping"
+	PathUsersGet          = "/users"
+	PathUsersSave         = "/users"
+	PathMessagesGet       = "/messages"
+	PathMessagesSend      = "/messages"
+	PathPing              = "/ping"
+	PathWebsocketChatBase = "/ws/chat"
+	PathWebsocketChat     = PathWebsocketChatBase + "/{mergedIDs}"
 )
 
 func GetHandler() http.Handler {
@@ -25,6 +27,7 @@ func GetHandler() http.Handler {
 	r.HandleFunc(PathUsersSave, h.SaveUser).Methods("POST")
 	r.HandleFunc(PathMessagesGet, h.ReadChat).Methods("GET")
 	r.HandleFunc(PathMessagesSend, h.SendMessage).Methods("POST")
+	r.HandleFunc(PathWebsocketChat, h.WebsocketChat).Methods("GET")
 
 	return r
 }

@@ -10,7 +10,7 @@ func NewID() string {
 	return strings.Split(uuid.NewString(), "-")[0]
 }
 
-func MergeIDs(id1, id2 string) (MergedIDs, error) {
+func MergeIDs(id1, id2 UserID) (MergedIDs, error) {
 	if id1 == "" || id2 == "" {
 		return "", errCannotMergeEmptyID
 	}

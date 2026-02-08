@@ -12,11 +12,12 @@ import (
 )
 
 type Handlers struct {
-	store store.Store
+	store       store.Store
+	newMessages chan *messages.Message
 }
 
 func NewHandler(store store.Store) *Handlers {
-	return &Handlers{store}
+	return &Handlers{store, make(chan *messages.Message)}
 }
 
 func (h *Handlers) Ping(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +70,8 @@ func (h *Handlers) SendMessage(w http.ResponseWriter, r *http.Request) {
 		WriteInternalServerError(w, err)
 		return
 	}
+
+	h.newMessages <- m
 
 	WriteOKEmpty(w, "Message sent")
 }
