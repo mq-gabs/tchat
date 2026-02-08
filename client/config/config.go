@@ -3,22 +3,26 @@ package config
 import "tchat.com/server/modules/users"
 
 type Config struct {
-	Me   *users.User
-	Host string
+	me   *users.User
+	host string
 }
 
-func New() *Config {
-	return &Config{}
+func New(me *users.User, host string) *Config {
+	return &Config{me, host}
 }
 
 func (c *Config) Validate() error {
-	if c.Me == nil {
+	if c.me == nil {
 		return errUserNotDefined
 	}
 
-	if c.Host == "" {
+	if c.host == "" {
 		return errHostNotDefined
 	}
 
 	return nil
+}
+
+func (c *Config) Me() *users.User {
+	return c.me
 }

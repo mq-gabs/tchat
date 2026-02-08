@@ -24,7 +24,7 @@ func Setup(conf *config.Config) *kmdx.CLI {
 
 	k.Command(cmdWhoAmI, func(c *kmdx.Command) {
 		c.Exec(func(s *kmdx.Scope) error {
-			whoAmI(conf.Me)
+			whoAmI(conf.Me())
 			return nil
 		})
 	})
