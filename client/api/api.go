@@ -39,6 +39,22 @@ func (api *TChatAPI) do(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
+func (api *TChatAPI) Ping() error {
+	req, err := NewGet(api.host + router.PathPing)
+	if err != nil {
+		return err
+	}
+
+	res, err := api.do(req)
+	if err != nil {
+		return err
+	}
+
+	_, err = ProcessResponseData[any](res)
+
+	return err
+}
+
 func (api *TChatAPI) ReadChat(readChatQuery *handlers.ReadChatQuery) ([]messages.Message, error) {
 	req, err := NewGet(api.host + router.PathMessagesGet)
 	if err != nil {
@@ -89,12 +105,12 @@ func (api *TChatAPI) SaveUser(saveUserBody *handlers.SaveUserBody) (*users.User,
 
 	defer resp.Body.Close()
 
-	user, err := ProcessResponseData[users.User](resp)
+	user, err := ProcessResponseData[*users.User](resp)
 	if err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	return user, nil
 }
 
 func (api *TChatAPI) FindUserByID(findUserByIDQuery *handlers.FindUserByIDQuery) (*users.User, error) {

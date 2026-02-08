@@ -9,18 +9,13 @@ import (
 	"tchat.com/server/router/handlers"
 )
 
-var (
-	errCannotDecode      = errors.New("cannot decode")
-	errCannotAssertType  = errors.New("cannot assert")
-	errInvalidResponse   = errors.New("invalid response")
-	errCannotMarshalBody = errors.New("cannot marshal body")
-)
-
 func ProcessResponseData[T any](r *http.Response) (T, error) {
 	var (
 		zero     T
-		response handlers.Response
+		response handlers.Response[T]
 	)
+
+	defer r.Body.Close()
 
 	if err := json.NewDecoder(r.Body).Decode(&response); err != nil {
 		return zero, errors.Join(errCannotDecode, err)
@@ -28,11 +23,7 @@ func ProcessResponseData[T any](r *http.Response) (T, error) {
 
 	switch r.StatusCode {
 	case http.StatusOK:
-		value, ok := response.Data.(T)
-		if !ok {
-			return zero, errCannotAssertType
-		}
-		return value, nil
+		return response.Data, nil
 	default:
 		return zero, errInvalidResponse
 	}
