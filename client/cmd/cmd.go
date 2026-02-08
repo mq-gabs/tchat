@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/mq-gabs/kmdx"
+	"tchat.com/client/config"
 )
 
 var (
@@ -12,7 +13,7 @@ var (
 	cmdChat = "chat"
 )
 
-func Setup() *kmdx.CLI {
+func Setup(conf *config.Config) *kmdx.CLI {
 	k := kmdx.New()
 
 	k.Command(cmdExit, func(c *kmdx.Command) {
@@ -23,7 +24,7 @@ func Setup() *kmdx.CLI {
 
 	k.Command(cmdWhoAmI, func(c *kmdx.Command) {
 		c.Exec(func(s *kmdx.Scope) error {
-			whoAmI()
+			whoAmI(conf.Me)
 			return nil
 		})
 	})

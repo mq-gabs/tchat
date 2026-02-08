@@ -1,9 +1,13 @@
 package cmd
 
-import "fmt"
+import (
+	"fmt"
 
-func whoAmI() error {
-	fmt.Println("John Doe")
+	"tchat.com/server/modules/users"
+)
+
+func whoAmI(u *users.User) error {
+	fmt.Printf("\nid: %v\nname: %v\n\n", u.ID, u.Name)
 
 	return nil
 }

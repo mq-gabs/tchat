@@ -87,7 +87,7 @@ func main() {
 	}
 
 	r := reader.New()
-	cli := cmd.Setup()
+	cli := cmd.Setup(conf)
 
 	for {
 		fmt.Printf("tchat > ")
