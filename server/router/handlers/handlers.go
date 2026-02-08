@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/websocket"
 	"tchat.com/server/modules/messages"
 	"tchat.com/server/modules/users"
 	"tchat.com/server/store"
@@ -14,10 +15,11 @@ import (
 type Handlers struct {
 	store       store.Store
 	newMessages chan *messages.Message
+	conn        []*websocket.Conn
 }
 
 func NewHandler(store store.Store) *Handlers {
-	return &Handlers{store, make(chan *messages.Message)}
+	return &Handlers{store, make(chan *messages.Message), []*websocket.Conn{}}
 }
 
 func (h *Handlers) Ping(w http.ResponseWriter, r *http.Request) {

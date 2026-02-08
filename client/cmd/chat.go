@@ -90,12 +90,11 @@ func startChat(userID utils.UserID, chatApi *api.TChatAPI, sender *users.User) e
 				break
 			}
 
-			err = chatApi.SendMessage(&handlers.SendMessageBody{
+			if err = chatApi.SendMessage(&handlers.SendMessageBody{
 				Body:       utils.MessageBody(input),
 				SenderID:   sender.ID,
 				ReceiverID: receiver.ID,
-			})
-			if err != nil {
+			}); err != nil {
 				fmt.Printf("cannot send message: %v\n", err.Error())
 				return
 			}

@@ -31,16 +31,19 @@ func (h *Handlers) WebsocketChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
+	h.conn = append(h.conn, conn)
 
 	for m := range h.newMessages {
-		bytes, err := json.Marshal(m)
-		if err != nil {
-			fmt.Printf("cannot marshal message: %v\n", err)
-			continue
-		}
+		for _, conn := range h.conn {
+			bytes, err := json.Marshal(m)
+			if err != nil {
+				fmt.Printf("cannot marshal message: %v\n", err)
+				continue
+			}
 
-		if err = conn.WriteMessage(websocket.TextMessage, bytes); err != nil {
-			fmt.Printf("cannot write message to socket: %v\n", err)
+			if err = conn.WriteMessage(websocket.TextMessage, bytes); err != nil {
+				fmt.Printf("cannot write message to socket: %v\n", err)
+			}
 		}
 	}
 }
