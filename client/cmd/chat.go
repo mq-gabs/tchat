@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -42,7 +41,7 @@ func startChat(args []string) error {
 		fmt.Printf("> ")
 
 		if !scanner.Scan() {
-			return errors.New("cannot scan message")
+			return errCannotScanMessage
 		}
 
 		input = scanner.Text()
