@@ -19,12 +19,11 @@ func main() {
 	for {
 		fmt.Printf("tchat > ")
 
-		if !scanner.Scan() {
-			fmt.Println("FATAL: cannot scan input")
+		input, err := r.Read()
+		if err != nil {
+			fmt.Println(err.Error())
 			return
 		}
-
-		input = scanner.Text()
 
 		err = cli.Exec(input)
 		if err == nil {
