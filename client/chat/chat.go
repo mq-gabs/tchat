@@ -40,3 +40,9 @@ func (c *Chat) Display() {
 	fmt.Println(string(bytes))
 	fmt.Println(c.history)
 }
+
+func (c *Chat) LoadHistory(msgs []messages.Message) {
+	for _, m := range msgs {
+		c.AddMessage(&m)
+	}
+}

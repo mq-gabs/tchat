@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/mq-gabs/kmdx"
 	"tchat.com/client/config"
+	"tchat.com/server/utils"
 )
 
 var (
@@ -37,8 +38,14 @@ func Setup(conf *config.Config) *kmdx.CLI {
 	})
 
 	k.Command(cmdChat, func(c *kmdx.Command) {
+		var userID string
+
+		c.Flags(func(fs kmdx.FlagSetter) {
+			fs.String("userid", &userID)
+		})
+
 		c.Exec(func(s *kmdx.Scope) error {
-			return startChat([]string{"blob"})
+			return startChat(utils.UserID(userID), conf.API(), conf.Me())
 		})
 	})
 
