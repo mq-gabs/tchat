@@ -71,7 +71,7 @@ func setup() (*config.Config, error) {
 		return nil, err
 	}
 
-	newConf := config.New(u, host)
+	newConf := config.New(u, chatApi)
 
 	fmt.Printf("\nlogged successfully!\nid: %v\nname: %v\n\n", u.ID, u.Name)
 
