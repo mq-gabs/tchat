@@ -19,6 +19,10 @@ func NewHandler(store store.Store) *Handlers {
 	return &Handlers{store}
 }
 
+func (h *Handlers) Ping(w http.ResponseWriter, r *http.Request) {
+	WriteOKEmpty(w, "pong")
+}
+
 type SendMessageBody struct {
 	Body       utils.MessageBody `json:"body"`
 	SenderID   utils.UserID      `json:"sent_by"`

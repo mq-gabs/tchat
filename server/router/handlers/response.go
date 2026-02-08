@@ -5,13 +5,13 @@ import (
 	"net/http"
 )
 
-type Response struct {
+type Response[T any] struct {
 	Code    int    `json:"-"`
 	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
+	Data    T      `json:"data,omitempty"`
 }
 
-func (r *Response) WriteSelf(w http.ResponseWriter) {
+func (r *Response[any]) WriteSelf(w http.ResponseWriter) {
 	res, err := json.Marshal(r)
 	if err != nil {
 		WriteInternalServerError(w, err)
@@ -22,7 +22,7 @@ func (r *Response) WriteSelf(w http.ResponseWriter) {
 	w.Write(res)
 }
 
-func WriteResponse(w http.ResponseWriter, r *Response) {
+func WriteResponse(w http.ResponseWriter, r *Response[any]) {
 	res, err := json.Marshal(r)
 	if err != nil {
 		WriteDefaultError(w)
@@ -38,7 +38,7 @@ func WriteDefaultError(w http.ResponseWriter) {
 }
 
 func WriteInternalServerError(w http.ResponseWriter, err error) {
-	r := Response{
+	r := Response[any]{
 		Code:    500,
 		Message: err.Error(),
 	}
@@ -47,7 +47,7 @@ func WriteInternalServerError(w http.ResponseWriter, err error) {
 }
 
 func WriteOKEmpty(w http.ResponseWriter, message string) {
-	r := Response{
+	r := Response[any]{
 		Code:    200,
 		Message: message,
 	}
@@ -56,7 +56,7 @@ func WriteOKEmpty(w http.ResponseWriter, message string) {
 }
 
 func WriteNotFound(w http.ResponseWriter, msg string, err error) {
-	r := Response{
+	r := Response[any]{
 		Code:    404,
 		Message: err.Error(),
 	}
@@ -65,7 +65,7 @@ func WriteNotFound(w http.ResponseWriter, msg string, err error) {
 }
 
 func WriteOKWithBody(w http.ResponseWriter, body any) {
-	r := Response{
+	r := Response[any]{
 		Code:    200,
 		Message: "OK",
 		Data:    body,
@@ -75,7 +75,7 @@ func WriteOKWithBody(w http.ResponseWriter, body any) {
 }
 
 func WriteBadRequest(w http.ResponseWriter, err error) {
-	r := Response{
+	r := Response[any]{
 		Code:    400,
 		Message: err.Error(),
 	}
