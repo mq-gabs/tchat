@@ -1,14 +1,18 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"tchat.com/server/modules/messages"
 	"tchat.com/server/modules/users"
 	"tchat.com/server/router"
 	"tchat.com/server/router/handlers"
+	"tchat.com/server/utils"
 )
 
 var (
@@ -30,6 +34,14 @@ func NewTChatAPI(host string) *TChatAPI {
 	}
 }
 
+func (api *TChatAPI) httpHost() string {
+	return "http://" + api.host
+}
+
+func (api *TChatAPI) wsHost() string {
+	return "ws://" + api.host
+}
+
 func (api *TChatAPI) do(req *http.Request) (*http.Response, error) {
 	resp, err := api.client.Do(req)
 	if err != nil {
@@ -40,7 +52,7 @@ func (api *TChatAPI) do(req *http.Request) (*http.Response, error) {
 }
 
 func (api *TChatAPI) Ping() error {
-	req, err := NewGet(api.host + router.PathPing)
+	req, err := NewGet(api.httpHost() + router.PathPing)
 	if err != nil {
 		return err
 	}
@@ -56,7 +68,7 @@ func (api *TChatAPI) Ping() error {
 }
 
 func (api *TChatAPI) ReadChat(readChatQuery *handlers.ReadChatQuery) ([]messages.Message, error) {
-	req, err := NewGet(api.host + router.PathMessagesGet)
+	req, err := NewGet(api.httpHost() + router.PathMessagesGet)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +89,7 @@ func (api *TChatAPI) ReadChat(readChatQuery *handlers.ReadChatQuery) ([]messages
 }
 
 func (api *TChatAPI) SendMessage(sendMessageBody *handlers.SendMessageBody) error {
-	req, err := NewPost(api.host+router.PathMessagesSend, sendMessageBody)
+	req, err := NewPost(api.httpHost()+router.PathMessagesSend, sendMessageBody)
 	if err != nil {
 		return err
 	}
@@ -93,7 +105,7 @@ func (api *TChatAPI) SendMessage(sendMessageBody *handlers.SendMessageBody) erro
 }
 
 func (api *TChatAPI) SaveUser(saveUserBody *handlers.SaveUserBody) (*users.User, error) {
-	req, err := NewPost(api.host+router.PathUsersSave, saveUserBody)
+	req, err := NewPost(api.httpHost()+router.PathUsersSave, saveUserBody)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +126,7 @@ func (api *TChatAPI) SaveUser(saveUserBody *handlers.SaveUserBody) (*users.User,
 }
 
 func (api *TChatAPI) FindUserByID(findUserByIDQuery *handlers.FindUserByIDQuery) (*users.User, error) {
-	req, err := NewGet(api.host + router.PathUsersSave)
+	req, err := NewGet(api.httpHost() + router.PathUsersSave)
 	if err != nil {
 		return nil, err
 	}
@@ -137,4 +149,38 @@ func (api *TChatAPI) FindUserByID(findUserByIDQuery *handlers.FindUserByIDQuery)
 
 	return &user, nil
 
+}
+
+func (api *TChatAPI) WebsocketChat(mergedIds utils.MergedIDs) (chan *messages.Message, error) {
+	url := api.wsHost() + router.PathWebsocketChatBase + "/" + string(mergedIds)
+	fmt.Println(url)
+	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
+	if err != nil {
+		return nil, errors.Join(errCannotConnectToWebsocket, err)
+	}
+
+	newMsgs := make(chan *messages.Message)
+
+	go func() {
+		defer conn.Close()
+		defer close(newMsgs)
+
+		for {
+			_, reader, err := conn.NextReader()
+			if err != nil {
+				fmt.Printf("cannot read websocket message\n")
+				return
+			}
+
+			var msg messages.Message
+			if err := json.NewDecoder(reader).Decode(&msg); err != nil {
+				fmt.Printf("cannot decode websocket message")
+				return
+			}
+
+			newMsgs <- &msg
+		}
+	}()
+
+	return newMsgs, nil
 }

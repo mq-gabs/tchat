@@ -35,12 +35,12 @@ func (h *Handlers) WebsocketChat(w http.ResponseWriter, r *http.Request) {
 	for m := range h.newMessages {
 		bytes, err := json.Marshal(m)
 		if err != nil {
-			fmt.Printf("cannot marshal message: %v", err)
+			fmt.Printf("cannot marshal message: %v\n", err)
 			continue
 		}
 
 		if err = conn.WriteMessage(websocket.TextMessage, bytes); err != nil {
-			fmt.Printf("cannot write message to socket: %v", err)
+			fmt.Printf("cannot write message to socket: %v\n", err)
 		}
 	}
 }

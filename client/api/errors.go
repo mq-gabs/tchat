@@ -3,7 +3,8 @@ package api
 import "errors"
 
 var (
-	errCannotDecode      = errors.New("cannot decode")
-	errInvalidResponse   = errors.New("invalid response")
-	errCannotMarshalBody = errors.New("cannot marshal body")
+	errCannotDecode             = errors.New("cannot decode")
+	errInvalidResponse          = errors.New("invalid response")
+	errCannotMarshalBody        = errors.New("cannot marshal body")
+	errCannotConnectToWebsocket = errors.New("cannot connect to websocket")
 )
