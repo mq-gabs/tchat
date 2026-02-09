@@ -151,9 +151,8 @@ func (api *TChatAPI) FindUserByID(findUserByIDQuery *handlers.FindUserByIDQuery)
 
 }
 
-func (api *TChatAPI) WebsocketChat(mergedIds utils.MergedIDs) (chan *messages.Message, error) {
-	url := api.wsHost() + router.PathWebsocketChatBase + "/" + string(mergedIds)
-	fmt.Println(url)
+func (api *TChatAPI) WebsocketChat(chatID utils.ChatID) (chan *messages.Message, error) {
+	url := api.wsHost() + router.PathWebsocketChatBase + "/" + string(chatID)
 	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {
 		return nil, errors.Join(errCannotConnectToWebsocket, err)

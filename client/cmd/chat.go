@@ -16,6 +16,7 @@ import (
 )
 
 func startChat(userID utils.UserID, chatApi *api.TChatAPI, sender *users.User) error {
+	var err error
 
 	receiver, err := chatApi.FindUserByID(&handlers.FindUserByIDQuery{
 		UserID: userID,
@@ -24,12 +25,12 @@ func startChat(userID utils.UserID, chatApi *api.TChatAPI, sender *users.User) e
 		return err
 	}
 
-	mergedIDs, err := utils.MergeIDs(sender.ID, receiver.ID)
+	chatID, err := utils.MakeChatID(sender.ID, receiver.ID)
 	if err != nil {
 		return err
 	}
 
-	newMsgs, err := chatApi.WebsocketChat(mergedIDs)
+	newMsgs, err := chatApi.WebsocketChat(chatID)
 	if err != nil {
 		return err
 	}
@@ -80,13 +81,14 @@ func startChat(userID utils.UserID, chatApi *api.TChatAPI, sender *users.User) e
 		for cont {
 			input, err := r.Read()
 			if err != nil {
-				fmt.Printf("cannot read input: %v\n", err.Error())
+				err = fmt.Errorf("cannot read input: %w", err)
 				cont = false
 				return
 			}
 
 			if strings.HasPrefix(input, "/exit") {
 				cont = false
+				err = nil
 				break
 			}
 
@@ -95,7 +97,7 @@ func startChat(userID utils.UserID, chatApi *api.TChatAPI, sender *users.User) e
 				SenderID:   sender.ID,
 				ReceiverID: receiver.ID,
 			}); err != nil {
-				fmt.Printf("cannot send message: %v\n", err.Error())
+				err = fmt.Errorf("cannot send message: %w", err)
 				return
 			}
 		}
@@ -104,5 +106,5 @@ func startChat(userID utils.UserID, chatApi *api.TChatAPI, sender *users.User) e
 	wg.Add(2)
 	wg.Wait()
 
-	return nil
+	return err
 }

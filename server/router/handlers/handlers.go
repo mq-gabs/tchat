@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/websocket"
 	"tchat.com/server/modules/messages"
@@ -14,12 +15,13 @@ import (
 
 type Handlers struct {
 	store       store.Store
-	newMessages chan *messages.Message
-	conn        []*websocket.Conn
+	newMessages map[utils.ChatID]chan *messages.Message
+	conn        map[utils.ChatID][]*websocket.Conn
+	mu          sync.Mutex
 }
 
 func NewHandler(store store.Store) *Handlers {
-	return &Handlers{store, make(chan *messages.Message), []*websocket.Conn{}}
+	return &Handlers{store, make(map[utils.ChatID]chan *messages.Message), make(map[utils.ChatID][]*websocket.Conn), sync.Mutex{}}
 }
 
 func (h *Handlers) Ping(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +75,22 @@ func (h *Handlers) SendMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.newMessages <- m
+	chatID, err := utils.MakeChatID(sender.ID, receiver.ID)
+	if err != nil {
+		WriteInternalServerError(w, err)
+		return
+	}
+
+	mu.Lock()
+
+	_, ok := h.newMessages[chatID]
+	if !ok {
+		h.newMessages[chatID] = make(chan *messages.Message)
+	}
+
+	mu.Unlock()
+
+	h.newMessages[chatID] <- m
 
 	WriteOKEmpty(w, "Message sent")
 }

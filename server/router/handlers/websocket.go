@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
+	"tchat.com/server/utils"
 )
 
 var (
@@ -19,9 +20,9 @@ var (
 )
 
 func (h *Handlers) WebsocketChat(w http.ResponseWriter, r *http.Request) {
-	mergedIDs := strings.TrimLeft(r.URL.Path, "/ws/chat/")
-	if mergedIDs == "" {
-		WriteBadRequest(w, errors.New("mergedIDs not provided"))
+	chatID := utils.ChatID(strings.TrimLeft(r.URL.Path, "/ws/chat/"))
+	if chatID == "" {
+		WriteBadRequest(w, errors.New("chatID not provided"))
 		return
 	}
 
@@ -31,10 +32,13 @@ func (h *Handlers) WebsocketChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-	h.conn = append(h.conn, conn)
 
-	for m := range h.newMessages {
-		for _, conn := range h.conn {
+	mu.Lock()
+	h.conn[chatID] = append(h.conn[chatID], conn)
+	mu.Unlock()
+
+	for m := range h.newMessages[chatID] {
+		for _, conn := range h.conn[chatID] {
 			bytes, err := json.Marshal(m)
 			if err != nil {
 				fmt.Printf("cannot marshal message: %v\n", err)

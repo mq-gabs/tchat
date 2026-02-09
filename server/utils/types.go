@@ -42,11 +42,11 @@ func (m MessageBody) Validate() error {
 	return nil
 }
 
-type MergedIDs string
+type ChatID string
 
-func (m MergedIDs) Validate() error {
+func (m ChatID) Validate() error {
 	if m == "" {
-		return errors.New("merged is empty")
+		return errors.New("chatID is empty")
 	}
 
 	return nil

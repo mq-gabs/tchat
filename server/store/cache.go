@@ -11,14 +11,14 @@ import (
 
 type TChatCache struct {
 	users    map[utils.UserID]*users.User
-	messages map[utils.MergedIDs][]*messages.Message
+	messages map[utils.ChatID][]*messages.Message
 	mu       *sync.Mutex
 }
 
 func NewCache() *TChatCache {
 	return &TChatCache{
 		users:    make(map[utils.UserID]*users.User),
-		messages: make(map[utils.MergedIDs][]*messages.Message),
+		messages: make(map[utils.ChatID][]*messages.Message),
 		mu:       &sync.Mutex{},
 	}
 }
@@ -46,12 +46,12 @@ func (c *TChatCache) SendMessage(m *messages.Message) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	mergedIds, err := utils.MergeIDs(m.SentBy.ID, m.SentTo.ID)
+	chatID, err := utils.MakeChatID(m.SentBy.ID, m.SentTo.ID)
 	if err != nil {
 		return err
 	}
 
-	c.messages[mergedIds] = append(c.messages[mergedIds], m)
+	c.messages[chatID] = append(c.messages[chatID], m)
 
 	return nil
 }
@@ -59,12 +59,12 @@ func (c *TChatCache) ReadChat(user1, user2 *users.User) ([]*messages.Message, er
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	mergedIds, err := utils.MergeIDs(user1.ID, user2.ID)
+	chatID, err := utils.MakeChatID(user1.ID, user2.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	ms := c.messages[mergedIds]
+	ms := c.messages[chatID]
 
 	return ms, nil
 }

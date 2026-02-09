@@ -15,7 +15,7 @@ const (
 	PathMessagesSend      = "/messages"
 	PathPing              = "/ping"
 	PathWebsocketChatBase = "/ws/chat"
-	PathWebsocketChat     = PathWebsocketChatBase + "/{mergedIDs}"
+	PathWebsocketChat     = PathWebsocketChatBase + "/{chatID}"
 )
 
 func GetHandler() http.Handler {
