@@ -31,7 +31,14 @@ func (h *Handlers) WebsocketChat(w http.ResponseWriter, r *http.Request) {
 		WriteInternalServerError(w, fmt.Errorf("cannot upgrade: %w", err))
 		return
 	}
-	defer conn.Close()
+	defer func() {
+		conn.Close()
+		mu.Lock()
+		h.conn[chatID] = utils.Filter(h.conn[chatID], func(c *websocket.Conn) bool {
+			return c != conn
+		})
+		mu.Unlock()
+	}()
 
 	mu.Lock()
 	h.conn[chatID] = append(h.conn[chatID], conn)
