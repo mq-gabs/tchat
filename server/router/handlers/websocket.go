@@ -34,18 +34,14 @@ func (h *Handlers) WebsocketChat(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		conn.Close()
 		mu.Lock()
-		h.conn[chatID] = utils.Filter(h.conn[chatID], func(c *websocket.Conn) bool {
-			return c != conn
-		})
+		h.websocketConnService.RemoveConn(conn, chatID)
 		mu.Unlock()
 	}()
 
-	mu.Lock()
-	h.conn[chatID] = append(h.conn[chatID], conn)
-	mu.Unlock()
+	h.websocketConnService.SaveConn(conn, chatID)
 
-	for m := range h.newMessages[chatID] {
-		for _, conn := range h.conn[chatID] {
+	for m := range h.messagesService.GetMessagesChannel(chatID) {
+		for _, conn := range h.websocketConnService.GetConns(chatID) {
 			bytes, err := json.Marshal(m)
 			if err != nil {
 				fmt.Printf("cannot marshal message: %v\n", err)
