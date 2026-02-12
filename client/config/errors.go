@@ -5,4 +5,8 @@ import "errors"
 var (
 	errUserNotDefined = errors.New("user not defined")
 	errHostNotDefined = errors.New("host not defined")
+
+	errCannotReadConfigFile      = errors.New("cannot read config file")
+	errCannotCreateConfigFile    = errors.New("cannot create config file")
+	errCannotUnmarshalConfigFile = errors.New("cannot unmarshal config file")
 )

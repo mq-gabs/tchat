@@ -3,8 +3,8 @@ package users
 import "tchat.com/server/utils"
 
 type User struct {
-	ID   utils.UserID   `json:"id"`
-	Name utils.UserName `json:"name"`
+	ID   utils.UserID   `json:"id" yaml:"id"`
+	Name utils.UserName `json:"name" yaml:"name"`
 }
 
 func New(name utils.UserName) *User {
