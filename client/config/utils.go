@@ -16,7 +16,7 @@ func loadConfig() (*ConfigOptions, error) {
 	var options ConfigOptions
 	err = yaml.Unmarshal(data, &options)
 	if err != nil {
-		return nil, errors.Join(errCannotUnmarshalConfigFile)
+		return nil, errors.Join(errCannotUnmarshalConfigFile, err)
 	}
 
 	return &options, nil
@@ -29,4 +29,14 @@ func createFile() error {
 	}
 
 	return nil
+}
+
+func saveConf(conf *ConfigOptions) {
+	f, err := os.OpenFile(configFileName, os.O_CREATE, 0644)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+
+	yaml.NewEncoder(f).Encode(conf)
 }

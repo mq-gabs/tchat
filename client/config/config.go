@@ -3,22 +3,24 @@ package config
 import (
 	"errors"
 	"os"
+	"sync"
 
 	"tchat.com/client/api"
 	"tchat.com/server/modules/users"
+	"tchat.com/server/utils"
 )
 
 var configFileName = "tchat.yaml"
 
 type Config struct {
-	me      *users.User
-	api     *api.TChatAPI
-	options *ConfigOptions
+	currentUserData *users.User
+	api             *api.TChatAPI
+	options         *ConfigOptions
+	mu              sync.Mutex
 }
 
-func New(me *users.User, chatApi *api.TChatAPI) (*Config, error) {
-
-	c := &Config{me, chatApi, &ConfigOptions{}}
+func New() (*Config, error) {
+	c := &Config{nil, nil, &ConfigOptions{}, sync.Mutex{}}
 
 	if err := c.loadConfig(); err != nil {
 		return nil, err
@@ -27,24 +29,28 @@ func New(me *users.User, chatApi *api.TChatAPI) (*Config, error) {
 	return c, nil
 }
 
-func (c *Config) Validate() error {
-	if c.me == nil {
-		return errUserNotDefined
-	}
-
-	if c.api == nil {
-		return errHostNotDefined
-	}
-
-	return nil
-}
-
 func (c *Config) Me() *users.User {
-	return c.me
+	return c.currentUserData
 }
 
 func (c *Config) API() *api.TChatAPI {
 	return c.api
+}
+
+func (c *Config) saveFile() {
+	saveConf(c.options)
+}
+
+func (c *Config) IsSet() bool {
+	return c.options.Name != ""
+}
+
+func (c *Config) UpdateName(name string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.options.Name = utils.UserName(name)
+	c.saveFile()
 }
 
 func (c *Config) loadConfig() error {
@@ -57,6 +63,8 @@ func (c *Config) loadConfig() error {
 		if err := createFile(); err != nil {
 			return err
 		}
+
+		conf = &ConfigOptions{}
 	}
 
 	c.options = conf

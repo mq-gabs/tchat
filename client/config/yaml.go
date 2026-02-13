@@ -2,10 +2,12 @@ package config
 
 import (
 	"tchat.com/server/modules/users"
+	"tchat.com/server/utils"
 )
 
 type ConfigOptions struct {
-	Servers []ConfigServer `yaml:"servers"`
+	Name    utils.UserName `yaml:"name"`
+	Servers []ConfigServer `yaml:"servers,omitempty"`
 }
 
 type ConfigServer struct {

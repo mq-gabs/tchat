@@ -3,8 +3,9 @@ package config
 import "errors"
 
 var (
-	errUserNotDefined = errors.New("user not defined")
-	errHostNotDefined = errors.New("host not defined")
+	errUserNotDefined    = errors.New("user not defined")
+	errHostNotDefined    = errors.New("host not defined")
+	errOptionsNotDefined = errors.New("options not defined")
 
 	errCannotReadConfigFile      = errors.New("cannot read config file")
 	errCannotCreateConfigFile    = errors.New("cannot create config file")
