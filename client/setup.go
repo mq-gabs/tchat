@@ -12,6 +12,11 @@ const (
 welcome!
 your tchat client is not configured...
 please, type your user name
+
+`
+	messageConfigured = `
+welcome back!
+
 `
 )
 
@@ -22,6 +27,7 @@ func setup() (*config.Config, error) {
 	}
 
 	if conf.IsSet() {
+		fmt.Printf(messageConfigured)
 		return conf, nil
 	}
 
