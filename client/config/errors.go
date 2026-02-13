@@ -10,4 +10,9 @@ var (
 	errCannotReadConfigFile      = errors.New("cannot read config file")
 	errCannotCreateConfigFile    = errors.New("cannot create config file")
 	errCannotUnmarshalConfigFile = errors.New("cannot unmarshal config file")
+
+	errHostAlreadyBeingUsed  = errors.New("host already being used")
+	errCannotReachServerHost = errors.New("cannot reach server host")
+	errCannotSaveUser        = errors.New("cannot save user")
+	errServerNotFound        = errors.New("server not found")
 )
