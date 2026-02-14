@@ -3,6 +3,8 @@ package config
 import "errors"
 
 var (
+	errInvalidIndex = errors.New("invalid index")
+
 	errUserNotDefined    = errors.New("user not defined")
 	errHostNotDefined    = errors.New("host not defined")
 	errOptionsNotDefined = errors.New("options not defined")

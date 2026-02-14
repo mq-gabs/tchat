@@ -17,6 +17,7 @@ var (
 
 	cmdServer        = "server"
 	cmdServerAdd     = "add"
+	cmdServerList    = "list"
 	cmdServerConnect = "connect"
 
 	cmdFriend    = "friend"
@@ -85,19 +86,22 @@ func Setup(conf *config.Config) *kmdx.CLI {
 			})
 		})
 
+		c.Subcommand(cmdServerList, func(sc *kmdx.Command) {
+			sc.Exec(func(s *kmdx.Scope) error {
+				conf.ListServers()
+				return nil
+			})
+		})
+
 		c.Subcommand(cmdServerConnect, func(sc *kmdx.Command) {
-			var serverHost string
+			var serverIndex int
 
 			sc.Flags(func(fs kmdx.FlagSetter) {
-				fs.String("host", &serverHost)
+				fs.Int("i", &serverIndex)
 			})
 
 			sc.Exec(func(s *kmdx.Scope) error {
-				if serverHost == "" {
-					return errServerHostMustBeProvided
-				}
-
-				if err := conf.ConnectServer(serverHost); err != nil {
+				if err := conf.ConnectServer(serverIndex); err != nil {
 					return err
 				}
 

@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"sync"
 
@@ -87,6 +88,14 @@ func (c *Config) GetServerByHost(host string) (*ConfigServer, bool) {
 	return nil, false
 }
 
+func (c *Config) GetServerById(index int) (*ConfigServer, error) {
+	if len(c.options.Servers) <= index {
+		return nil, errInvalidIndex
+	}
+
+	return c.options.Servers[index], nil
+}
+
 func (c *Config) AddServer(host string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -118,12 +127,12 @@ func (c *Config) AddServer(host string) error {
 	return nil
 }
 
-func (c *Config) ConnectServer(host string) error {
+func (c *Config) ConnectServer(index int) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	s, ok := c.GetServerByHost(host)
-	if !ok {
+	s, err := c.GetServerById(index)
+	if err != nil {
 		return errServerNotFound
 	}
 
@@ -135,6 +144,17 @@ func (c *Config) ConnectServer(host string) error {
 	c.saveFile()
 
 	return nil
+}
+
+func (c *Config) ListServers() {
+	if len(c.options.Servers) == 0 {
+		fmt.Println("no servers registered")
+		return
+	}
+
+	for i, s := range c.options.Servers {
+		fmt.Printf("#%v: %v\n", i, s.Host)
+	}
 }
 
 func (c *Config) GetFriendByServer(id utils.UserID, server *ConfigServer) (*users.User, bool) {
