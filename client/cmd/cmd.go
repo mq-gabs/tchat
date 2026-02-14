@@ -20,8 +20,10 @@ var (
 	cmdServerList    = "list"
 	cmdServerConnect = "connect"
 
-	cmdFriend    = "friend"
-	cmdFriendAdd = "add"
+	cmdFriend     = "friend"
+	cmdFriendAdd  = "add"
+	cmdFriendList = "list"
+	cmdFriendChat = "chat"
 )
 
 func Setup(conf *config.Config) *kmdx.CLI {
@@ -126,6 +128,29 @@ func Setup(conf *config.Config) *kmdx.CLI {
 				}
 
 				return conf.AddFriend(utils.UserID(userID))
+			})
+		})
+
+		c.Subcommand(cmdFriendList, func(sc *kmdx.Command) {
+			sc.Exec(func(s *kmdx.Scope) error {
+				return conf.ListFriends()
+			})
+		})
+
+		c.Subcommand(cmdFriendChat, func(sc *kmdx.Command) {
+			var friendIndex int
+
+			sc.Flags(func(fs kmdx.FlagSetter) {
+				fs.Int("i", &friendIndex)
+			})
+
+			sc.Exec(func(s *kmdx.Scope) error {
+				f, err := conf.GetFriendByIndex(friendIndex)
+				if err != nil {
+					return err
+				}
+
+				return startChat(f.ID, conf.API(), conf.Me())
 			})
 		})
 	})

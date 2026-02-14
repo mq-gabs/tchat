@@ -51,6 +51,15 @@ func (c *Config) IsConnected() bool {
 	return c.currentApi != nil
 }
 
+func (c *Config) getCurrentServer() (*ConfigServer, error) {
+	s, ok := c.GetServerByHost(c.currentApi.Host())
+	if !ok {
+		return nil, errServerNotFound
+	}
+
+	return s, nil
+}
+
 func (c *Config) UpdateName(name string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -188,6 +197,41 @@ func (c *Config) AddFriend(userID utils.UserID) error {
 	s.Friends = append(s.Friends, u)
 
 	c.saveFile()
+
+	return nil
+}
+
+func (c *Config) GetFriendByIndex(index int) (*users.User, error) {
+	s, err := c.getCurrentServer()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(s.Friends) <= index {
+		return nil, errInvalidIndex
+	}
+
+	return s.Friends[index], nil
+}
+
+func (c *Config) ListFriends() error {
+	if !c.IsConnected() {
+		return errNoServerIsConnected
+	}
+
+	s, ok := c.GetServerByHost(c.currentApi.Host())
+	if !ok {
+		return errServerNotFound
+	}
+
+	if len(s.Friends) == 0 {
+		fmt.Println("friends list is empty")
+		return nil
+	}
+
+	for i, f := range s.Friends {
+		fmt.Printf("#%v:\n\tID: %v\n\tName: %v\n", i, f.ID, f.Name)
+	}
 
 	return nil
 }
