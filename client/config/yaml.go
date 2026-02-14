@@ -13,5 +13,5 @@ type ConfigOptions struct {
 type ConfigServer struct {
 	Host    string       `yaml:"host"`
 	User    users.User   `yaml:"user"`
-	Friends []users.User `yaml:"friends"`
+	Friends []users.User `yaml:"friends,omitempty"`
 }

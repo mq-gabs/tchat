@@ -32,7 +32,7 @@ func createFile() error {
 }
 
 func saveConf(conf *ConfigOptions) {
-	f, err := os.OpenFile(configFileName, os.O_CREATE, 0644)
+	f, err := os.OpenFile(configFileName, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return
 	}
