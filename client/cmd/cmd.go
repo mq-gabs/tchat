@@ -18,6 +18,9 @@ var (
 	cmdServer        = "server"
 	cmdServerAdd     = "add"
 	cmdServerConnect = "connect"
+
+	cmdFriend    = "friend"
+	cmdFriendAdd = "add"
 )
 
 func Setup(conf *config.Config) *kmdx.CLI {
@@ -101,6 +104,24 @@ func Setup(conf *config.Config) *kmdx.CLI {
 				fmt.Println("server connected!")
 
 				return nil
+			})
+		})
+	})
+
+	k.Command(cmdFriend, func(c *kmdx.Command) {
+		c.Subcommand(cmdFriendAdd, func(sc *kmdx.Command) {
+			var userID string
+
+			sc.Flags(func(fs kmdx.FlagSetter) {
+				fs.String("userid", &userID)
+			})
+
+			sc.Exec(func(s *kmdx.Scope) error {
+				if userID == "" {
+					return fmt.Errorf("%w: userid", errFlagNotDefined)
+				}
+
+				return conf.AddFriend(utils.UserID(userID))
 			})
 		})
 	})

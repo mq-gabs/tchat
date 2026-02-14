@@ -12,4 +12,5 @@ var (
 	errCannotScanMessage        = errors.New("cannot scan message")
 	errServerHostMustBeProvided = errors.New("server host must be provided")
 	errServerNotConnected       = errors.New("server not connected")
+	errFlagNotDefined           = errors.New("flag not defined")
 )

@@ -34,6 +34,10 @@ func NewTChatAPI(host string) *TChatAPI {
 	}
 }
 
+func (api *TChatAPI) Host() string {
+	return api.host
+}
+
 func (api *TChatAPI) httpHost() string {
 	return "http://" + api.host
 }

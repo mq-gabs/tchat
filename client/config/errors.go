@@ -15,4 +15,7 @@ var (
 	errCannotReachServerHost = errors.New("cannot reach server host")
 	errCannotSaveUser        = errors.New("cannot save user")
 	errServerNotFound        = errors.New("server not found")
+
+	errFriendAlreadyAdded = errors.New("fried already added")
+	errUserNotFound       = errors.New("user not found")
 )

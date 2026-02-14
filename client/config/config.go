@@ -77,14 +77,14 @@ func (c *Config) loadConfig() error {
 	return nil
 }
 
-func (c *Config) GetServerByHost(host string) (ConfigServer, bool) {
+func (c *Config) GetServerByHost(host string) (*ConfigServer, bool) {
 	for _, s := range c.options.Servers {
 		if s.Host == host {
 			return s, true
 		}
 	}
 
-	return ConfigServer{}, false
+	return nil, false
 }
 
 func (c *Config) AddServer(host string) error {
@@ -108,7 +108,7 @@ func (c *Config) AddServer(host string) error {
 	}
 
 	c.currentApi = chatAPI
-	c.options.Servers = append(c.options.Servers, ConfigServer{
+	c.options.Servers = append(c.options.Servers, &ConfigServer{
 		Host: host,
 		User: *u,
 	})
@@ -131,6 +131,41 @@ func (c *Config) ConnectServer(host string) error {
 
 	c.currentApi = chatApi
 	c.currentUserData = &s.User
+
+	c.saveFile()
+
+	return nil
+}
+
+func (c *Config) GetFriendByServer(id utils.UserID, server *ConfigServer) (*users.User, bool) {
+	for _, u := range server.Friends {
+		if u.ID == id {
+			return u, true
+		}
+	}
+
+	return nil, false
+}
+
+func (c *Config) AddFriend(userID utils.UserID) error {
+	s, ok := c.GetServerByHost(c.currentApi.Host())
+	if !ok {
+		return errServerNotFound
+	}
+
+	_, ok = c.GetFriendByServer(userID, s)
+	if ok {
+		return errFriendAlreadyAdded
+	}
+
+	u, err := c.currentApi.FindUserByID(&handlers.FindUserByIDQuery{
+		UserID: userID,
+	})
+	if err != nil {
+		return errors.Join(errUserNotFound, err)
+	}
+
+	s.Friends = append(s.Friends, u)
 
 	c.saveFile()
 
