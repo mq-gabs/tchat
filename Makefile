@@ -1,5 +1,7 @@
-client:
-	go build -o tchat tchat.com/client
+all: build-client build-server
 
-server:
-	go build -o tchat-server tchat.com/server
+build-client:
+	go build -o dist/tchat tchat.com/client
+
+build-server:
+	go build -o dist/tchat-server tchat.com/server
