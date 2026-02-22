@@ -18,42 +18,23 @@ Chat app via terminal. It's composed by a client and server. You need to run the
 
 ## :runner: How to run
 
-### Server
-
-1. Build
-
+1. Build Client and Server
+> The binaries will be saved on `dist/`
 ```bash
-go build -o tchat-server tchat.com/server
+make all
 ```
 
-2. Run
+
+2. Run Server
 
 ```bash
 ./tchat-server
 ```
 
-### Client
-
-1. Build
-
-```bash
-go build -o tchat tchat.com/client
-```
-
-2. Start the CLI REPL
+3. Start the CLI REPL
 
 ```bash
 ./tchat
-```
-
-3. Set host
-
-```bash
-welcome!
-your tchat client is not configured...
-please, type the server host
-
-host:
 ```
 
 4. Set username
@@ -63,26 +44,18 @@ now type your username
 user name:
 ```
 
-5. You'll be registered in the server
+5. Register the server you just started
+> The default port is `8080`
 
 ```bash
-logged successfully!
-id: <id>
-name: <name>
-
-tchat >
+server add -host:<host:port>
 ```
 
 6. Check your data running `whoami`
-7. Start chat with someone else registered
+
+7. Start chat with someone else registered on the server you connected
 
 ```bash
 chat -userid=<id>
 ```
 
-## :rocket: Roadmap
-
-- Implement persistence with SQLite
-- Implement client configuration file
-- Add friends list to configuration file
-- Add different servers config to configuration file
